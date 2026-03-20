@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280">
+    <title>東園國小弦樂團 | 琴星閃耀 樂音飄揚</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            scroll-behavior: smooth;
+            min-width: 1280px;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .editable-img-container {
+            position: relative;
+            cursor: default;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 管理員模式下的樣式：僅變換滑鼠游標 */
+        .admin-mode .editable-img-container {
+            cursor: pointer;
+        }
+
+        .editable-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* 移除所有視覺上的浮層與圖標 (水滴/相機/加號) */
+        .upload-overlay {
+            display: none !important;
+        }
+
+        .placeholder-icon {
+            display: none !important;
+        }
+
+        .saving-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+        }
+
+        .file-input-hidden {
+            display: none;
+        }
+
+        #admin-login-area {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800" id="main-body">
+
+    <!-- 導航欄 -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-music text-indigo-600 text-2xl"></i>
+                <span class="text-2xl font-bold tracking-tighter text-indigo-900">東園國小弦樂團</span>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+                <div class="flex space-x-6 font-medium text-gray-600">
+                    <a href="#team" class="hover:text-indigo-600 transition text-sm">成員師資</a>
+                    <a href="#events" class="hover:text-indigo-600 transition text-sm">活動紀錄</a>
+                    <a href="#schedule" class="hover:text-indigo-600 transition text-sm">團練時間</a>
+                </div>
+
+                <!-- 管理員專區 -->
+                <div class="flex items-center bg-gray-100 rounded-full px-2 py-1 space-x-2 border border-gray-200">
+                    <div id="admin-login-area" class="flex items-center space-x-1">
+                        <button id="show-input-btn" class="text-[11px] font-bold text-gray-500 hover:text-indigo-600 px-2 py-1 transition flex items-center gap-1">
+                            <i class="fas fa-cog"></i> 管理員專區
+                        </button>
+                        <div id="password-input-wrapper" class="hidden flex items-center space-x-1">
+                            <input type="password" id="admin-password" class="w-24 bg-white border border-gray-300 rounded-full px-3 py-1 text-[11px] focus:outline-none focus:border-indigo-500" placeholder="請輸入密碼">
+                            <button id="login-confirm-btn" class="bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-full font-bold hover:bg-indigo-700">驗證</button>
+                            <button id="cancel-input-btn" class="text-gray-400 hover:text-gray-600 text-[10px] px-1"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div id="admin-status" class="hidden text-[10px] bg-indigo-600 text-white px-3 py-1 rounded-full font-bold uppercase tracking-wider animate-pulse flex items-center gap-2">
+                        <i class="fas fa-user-shield"></i> Admin Active
+                    </div>
+                    
+                    <button id="logout-btn" class="hidden text-[11px] font-bold text-red-500 hover:text-red-700 px-2 py-1 transition flex items-center gap-1">
+                        <i class="fas fa-sign-out-alt"></i> 登出
+                    </button>
+                </div>
+
+                <a href="https://www.facebook.com/p/%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%9C%92%E5%9C%8B%E5%B0%8F%E5%BC%A6%E6%A8%82%E5%9C%98-100054503499478/" target="_blank" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 font-bold text-sm">加入我們</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主視覺區 -->
+    <header class="hero-gradient text-white py-24 px-6 overflow-hidden relative border-b-8 border-indigo-100">
+        <div class="container mx-auto flex flex-row items-center justify-between gap-12">
+            <div class="w-1/2 z-10 text-left">
+                <h1 class="text-6xl font-black mb-6 leading-tight">
+                    琴星閃耀<br><span class="text-indigo-200">奏響童年的旋律</span>
+                </h1>
+                <p class="text-xl mb-10 opacity-90 leading-relaxed max-w-lg">
+                    新竹市東園國小弦樂團創立至今已邁入第十週年。我們致力於音樂教育的推廣，透過提琴的音色，培養孩子們的專注力、美感與團隊精神。
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://www.facebook.com/p/%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%9C%92%E5%9C%8B%E5%B0%8F%E5%BC%A6%E6%A8%82%E5%9C%98-100054503499478/" target="_blank" class="bg-white text-indigo-600 font-bold px-10 py-4 rounded-full hover:bg-gray-100 transition shadow-lg">立即報名</a>
+                    <a href="#events" class="border border-white/40 px-10 py-4 rounded-full hover:bg-white/10 transition">最新演出</a>
+                </div>
+            </div>
+            <div class="w-1/2 relative">
+                <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20 transform rotate-2 editable-img-container aspect-video w-full" id="hero-trigger">
+                    <div class="saving-overlay" id="saving-hero"><i class="fas fa-spinner fa-spin text-indigo-600"></i></div>
+                    <img id="img-hero" src="image_7d5fa1.png" onerror="this.src='https://raw.githubusercontent.com/chijenyang-bit/DYES_STRINGS/main/bb.jpg'" alt="[東園國小弦樂團全體大合照]">
+                    <input type="file" id="upload-hero" class="file-input-hidden" accept="image/*">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 團隊成員與師資 -->
+    <section id="team" class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">專業團隊與師資</h2>
+                <div class="w-20 h-1.5 bg-indigo-600 mx-auto rounded-full"></div>
+            </div>
+            
+            <!-- 核心領導 -->
+            <div class="grid grid-cols-2 gap-8 mb-20">
+                <div class="flex items-center p-8 bg-indigo-50 rounded-3xl card-hover border border-indigo-100">
+                    <div class="w-24 h-24 bg-indigo-600 rounded-full flex-shrink-0 flex items-center justify-center text-white text-4xl mr-6 shadow-xl overflow-hidden editable-img-container" id="leader-trigger">
+                        <img id="img-leader" src="image_7e3616.png" onerror="this.src='https://raw.githubusercontent.com/chijenyang-bit/DYES_STRINGS/main/head.jpg'" alt="[江立皓團長/指揮]">
+                        <input type="file" id="up-leader" class="file-input-hidden" accept="image/*">
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <h3 class="font-bold text-2xl">江立皓</h3>
+                            <span class="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold">指揮暨團長</span>
+                        </div>
+                        <p class="text-gray-600 font-medium">統籌樂團發展與專業音樂指導</p>
+                        <p class="text-xs text-indigo-400 mt-2">深耕弦樂教育多年，帶領樂團屢獲佳績</p>
+                    </div>
+                </div>
+                <div class="flex items-center p-8 bg-purple-50 rounded-3xl card-hover border border-purple-100">
+                    <div class="w-24 h-24 bg-purple-600 rounded-full flex-shrink-0 flex items-center justify-center text-white text-4xl mr-6 shadow-xl overflow-hidden editable-img-container" id="chair-trigger">
+                        <img id="img-chair" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aria" alt="[家長會長]">
+                        <input type="file" id="up-chair" class="file-input-hidden" accept="image/*">
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <h3 class="font-bold text-2xl">現任樂團會長</h3>
+                            <span class="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold">會長</span>
+                        </div>
+                        <p class="text-gray-600 font-medium">後援會強大支撐與親師協調</p>
+                        <p class="text-xs text-purple-400 mt-2">陪伴孩子共同成長的最佳後盾</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分部師資 -->
+            <div class="grid grid-cols-3 gap-8">
+                <div class="bg-white border border-gray-100 rounded-3xl p-10 shadow-sm card-hover text-center">
+                    <div class="w-24 h-24 bg-blue-100 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-music text-blue-600 text-4xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">小提琴師資</h4>
+                    <p class="text-gray-500 mb-6 leading-relaxed">專注於指法引導與音色磨練，建立紮實的基本功。</p>
+                    <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-600 rounded-lg text-sm font-bold">專業分部教學</span>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-3xl p-10 shadow-sm card-hover text-center">
+                    <div class="w-24 h-24 bg-indigo-100 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-guitar text-indigo-600 text-4xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">中提琴師資</h4>
+                    <p class="text-gray-500 mb-6 leading-relaxed">溫暖的和聲支柱，引領學生體會樂曲中的深層情感。</p>
+                    <span class="inline-block px-4 py-1.5 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-bold">精緻小班制</span>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-3xl p-10 shadow-sm card-hover text-center">
+                    <div class="w-24 h-24 bg-purple-100 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-drum text-purple-600 text-4xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">大提琴師資</h4>
+                    <p class="text-gray-500 mb-6 leading-relaxed">雄渾的低音之王，培養節奏感與沉穩的運弓技巧。</p>
+                    <span class="inline-block px-4 py-1.5 bg-purple-100 text-purple-600 rounded-lg text-sm font-bold">合奏節奏掌握</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 活動紀錄 -->
+    <section id="events" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-900 mb-12">活動與演出紀錄</h2>
+            <div class="grid grid-cols-4 gap-6">
+                <div class="group relative rounded-2xl h-72 shadow-xl editable-img-container" id="ev1-trigger">
+                    <div class="saving-overlay" id="saving-1"><i class="fas fa-spinner fa-spin text-indigo-600"></i></div>
+                    <img id="img-1" src="https://raw.githubusercontent.com/chijenyang-bit/DYES_STRINGS/main/%E4%B8%8B%E8%BC%896.jpg" alt="[年度音樂會]">
+                    <input type="file" id="up-1" class="file-input-hidden" accept="image/*">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 z-10">
+                        <p class="text-white font-bold">年度音樂會：琴星閃耀</p>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl h-72 shadow-xl editable-img-container" id="ev2-trigger">
+                    <div class="saving-overlay" id="saving-2"><i class="fas fa-spinner fa-spin text-indigo-600"></i></div>
+                    <img id="img-2" src="https://raw.githubusercontent.com/chijenyang-bit/DYES_STRINGS/main/%E4%B8%8B%E8%BC%892.jpg" alt="[交流演出]">
+                    <input type="file" id="up-2" class="file-input-hidden" accept="image/*">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 z-10">
+                        <p class="text-white font-bold">新竹孔廟交流演出</p>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl h-72 shadow-xl editable-img-container" id="ev3-trigger">
+                    <div class="saving-overlay" id="saving-3"><i class="fas fa-spinner fa-spin text-indigo-600"></i></div>
+                    <img id="img-3" src="https://raw.githubusercontent.com/chijenyang-bit/DYES_STRINGS/main/%E4%B8%8B%E8%BC%895.jpg" alt="[校園生活]">
+                    <input type="file" id="up-3" class="file-input-hidden" accept="image/*">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 z-10">
+                        <p class="text-white font-bold">校園生活寫真</p>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl h-72 shadow-xl editable-img-container" id="ev4-trigger">
+                    <div class="saving-overlay" id="saving-4"><i class="fas fa-spinner fa-spin text-indigo-600"></i></div>
+                    <img id="img-4" src="https://raw.githubusercontent.com/chijenyang-bit/DYES_STRINGS/main/%E4%B8%8B%E8%BC%894.jpg" alt="[招募活動]">
+                    <input type="file" id="up-4" class="file-input-hidden" accept="image/*">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 z-10">
+                        <p class="text-white font-bold">新生招募活動</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 團練時間表 -->
+    <section id="schedule" class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-5xl mx-auto bg-white rounded-[40px] shadow-2xl border border-gray-50 overflow-hidden">
+                <div class="bg-indigo-600 p-12 text-white flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">團練時間表</h2>
+                        <p class="opacity-80">115學年度 第一學期</p>
+                    </div>
+                    <i class="fas fa-calendar-check text-6xl opacity-30"></i>
+                </div>
+                <div class="p-12 grid grid-cols-2 gap-12">
+                    <div class="border-l-4 border-blue-400 pl-8">
+                        <h4 class="text-blue-600 font-bold text-xl mb-4">每週一~五</h4>
+                        <div class="bg-gray-50 p-6 rounded-2xl">
+                            <h5 class="font-bold text-lg mb-2">分部課基礎練習</h5>
+                            <p class="text-gray-500">時間：07:30 - 08:30</p>
+                        </div>
+                    </div>
+                    <div class="border-l-4 border-indigo-600 pl-8">
+                        <h4 class="text-indigo-600 font-bold text-xl mb-4">每週六</h4>
+                        <div class="bg-indigo-50 p-6 rounded-2xl">
+                            <h5 class="font-bold text-lg mb-2">全團大合奏</h5>
+                            <p class="text-gray-500">時間：13:30 - 15:30</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 招生資訊 -->
+    <section id="admission" class="py-24 hero-gradient text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-5xl font-black mb-16">歡迎加入我們的大家庭</h2>
+            <div class="grid grid-cols-3 gap-8 mb-16 text-left">
+                <div class="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
+                    <i class="fas fa-child text-2xl mb-6"></i>
+                    <h4 class="font-bold text-xl mb-4">招收對象</h4>
+                    <p class="opacity-90">一至五年級在學學生，對提琴演奏有高度熱忱者。</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
+                    <i class="fas fa-file-signature text-2xl mb-6"></i>
+                    <h4 class="font-bold text-xl mb-4">甄選內容</h4>
+                    <p class="opacity-90">準備自選曲一首 (約2-3分鐘)，現場將進行基礎音階測試。</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
+                    <i class="fas fa-phone-alt text-2xl mb-6"></i>
+                    <h4 class="font-bold text-xl mb-4">聯絡資訊</h4>
+                    <p class="opacity-90">歡迎於上班時間撥打教務處分機，或透過後援會粉專洽詢。</p>
+                </div>
+            </div>
+            <a href="https://www.facebook.com/p/%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%9C%92%E5%9C%8B%E5%B0%8F%E5%BC%A6%E6%A8%82%E5%9C%98-100054503499478/" target="_blank" class="inline-block bg-white text-indigo-700 font-black px-16 py-5 rounded-full text-xl shadow-2xl hover:scale-105 transition transform">
+                立即填寫報名表單
+            </a>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-400 py-16 px-6">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">© 2024 新竹市東園國小弦樂團 | 琴星閃耀 樂音飄揚</p>
+        </div>
+    </footer>
+
+    <!-- Firebase 邏輯 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db = null;
+        let auth = null;
+        let siteDocRef = null;
+        let isAdmin = false;
+
+        try {
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-orchestra-id';
+            
+            if (firebaseConfig.apiKey) {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                siteDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'siteContent', 'images');
+            }
+        } catch (e) { console.warn("Firebase not found."); }
+
+        // 管理員介面控制
+        const showInputBtn = document.getElementById('show-input-btn');
+        const passInputWrapper = document.getElementById('password-input-wrapper');
+        const passInput = document.getElementById('admin-password');
+        const confirmBtn = document.getElementById('login-confirm-btn');
+        const adminStatus = document.getElementById('admin-status');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        function setAdminMode(enabled) {
+            isAdmin = enabled;
+            const body = document.getElementById('main-body');
+            if (enabled) {
+                body.classList.add('admin-mode');
+                adminStatus.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                showInputBtn.classList.add('hidden');
+                passInputWrapper.classList.add('hidden');
+                sessionStorage.setItem('isAdmin', 'true');
+            } else {
+                body.classList.remove('admin-mode');
+                adminStatus.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                showInputBtn.classList.remove('hidden');
+                passInputWrapper.classList.add('hidden');
+                sessionStorage.removeItem('isAdmin');
+                passInput.value = '';
+            }
+        }
+
+        showInputBtn.addEventListener('click', () => {
+            showInputBtn.classList.add('hidden');
+            passInputWrapper.classList.remove('hidden');
+            passInput.focus();
+        });
+
+        const handleVerify = () => {
+            if (passInput.value === '1234') { 
+                setAdminMode(true); 
+                showToast('管理員權限已開啟'); 
+            }
+            else { 
+                passInput.classList.add('shake'); 
+                setTimeout(() => passInput.classList.remove('shake'), 400); 
+            }
+        };
+
+        confirmBtn.addEventListener('click', handleVerify);
+        passInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleVerify(); });
+        logoutBtn.addEventListener('click', () => {
+            setAdminMode(false);
+            showToast('已登出管理員模式');
+        });
+        if (sessionStorage.getItem('isAdmin') === 'true') setAdminMode(true);
+
+        // 圖片處理邏輯
+        const uploadToFirestore = async (fileInput, imgId, fieldName) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64Data = e.target.result;
+                document.getElementById(imgId).src = base64Data;
+                if (db && siteDocRef) {
+                    try {
+                        await setDoc(siteDocRef, { [fieldName]: base64Data }, { merge: true });
+                        showToast('已同步至雲端');
+                    } catch (err) { 
+                        showToast('上傳失敗，請稍後再試'); 
+                    }
+                }
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        };
+
+        const setupTrigger = (triggerId, inputId, imgId, field) => {
+            const trigger = document.getElementById(triggerId);
+            const input = document.getElementById(inputId);
+            if(trigger && input) {
+                trigger.addEventListener('click', () => {
+                    if (isAdmin) input.click();
+                });
+                input.addEventListener('change', () => uploadToFirestore(input, imgId, field));
+            }
+        };
+
+        setupTrigger('hero-trigger', 'upload-hero', 'img-hero', 'heroMain');
+        setupTrigger('leader-trigger', 'up-leader', 'img-leader', 'leaderImg');
+        setupTrigger('chair-trigger', 'up-chair', 'img-chair', 'chairImg');
+        setupTrigger('ev1-trigger', 'up-1', 'img-1', 'event1');
+        setupTrigger('ev2-trigger', 'up-2', 'img-2', 'event2');
+        setupTrigger('ev3-trigger', 'up-3', 'img-3', 'event3');
+        setupTrigger('ev4-trigger', 'up-4', 'img-4', 'event4');
+
+        if (auth && db) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    onSnapshot(siteDocRef, (snap) => {
+                        if (snap.exists()) {
+                            const data = snap.data();
+                            if (data.heroMain) document.getElementById('img-hero').src = data.heroMain;
+                            if (data.leaderImg) document.getElementById('img-leader').src = data.leaderImg;
+                            if (data.chairImg) document.getElementById('img-chair').src = data.chairImg;
+                            if (data.event1) document.getElementById('img-1').src = data.event1;
+                            if (data.event2) document.getElementById('img-2').src = data.event2;
+                            if (data.event3) document.getElementById('img-3').src = data.event3;
+                            if (data.event4) document.getElementById('img-4').src = data.event4;
+                        }
+                    }, (error) => console.error("Snapshot error:", error));
+                }
+            });
+            (async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+            })();
+        }
+
+        function showToast(msg) {
+            const existing = document.querySelector('.toast-msg');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = "toast-msg fixed bottom-8 right-8 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl z-[1000] text-xs font-bold";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
